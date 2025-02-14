@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Currency Converter</title>
+  <link rel="icon" href="./logo.png">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .converter {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+    .converter h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .form-group input{
+        width: 94%;
+    }
+    .form-group select{
+        width: 100%;
+        height: 40px;
+    }
+    .form-group input, .form-group select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    .btn {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #0056b3;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      text-align: center;
+    }
+    .currency-option {
+      display: flex;
+      align-items: center;
+    }
+    .currency-option img {
+      margin-right: 10px;
+      width: 20px;
+      height: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="converter">
+    <h1>Currency Converter</h1>
+
+    <div class="form-group">
+      <label for="amount">Amount:</label>
+      <input type="number" id="amount" placeholder="Enter amount" min="0" step="0.01">
+    </div>
+
+    <div class="form-group">
+      <label for="fromCurrency">From:</label>
+      <select id="fromCurrency">
+        <option value="INR" data-image="https://flagcdn.com/w40/in.png">INR - Indian Rupee</option>
+        <option value="USD" data-image="https://flagcdn.com/w40/us.png">USD - United States Dollar</option>
+        <option value="EUR" data-image="https://flagcdn.com/w40/eu.png">EUR - Euro</option>
+        <option value="CAD" data-image="https://flagcdn.com/w40/ca.png">CAD - Canadian Dollar</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="toCurrency">To:</label>
+      <select id="toCurrency">
+        <option value="INR" data-image="https://flagcdn.com/w40/in.png">INR - Indian Rupee</option>
+        <option value="USD" data-image="https://flagcdn.com/w40/us.png">USD - United States Dollar</option>
+        <option value="EUR" data-image="https://flagcdn.com/w40/eu.png">EUR - Euro</option>
+        <option value="CAD" data-image="https://flagcdn.com/w40/ca.png">CAD - Canadian Dollar</option>
+      </select>
+    </div>
+
+    <button class="btn" onclick="convertCurrency()">Convert</button>
+    <div class="result" id="result"></div>
+  </div>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+  <script>
+    const exchangeRates = {
+      'INR': { 'USD': 0.012, 'EUR': 0.010, 'CAD': 0.016 },
+      'USD': { 'EUR': 0.85, 'CAD': 1.25, 'INR': 82.0 },
+      'EUR': { 'USD': 1.18, 'CAD': 1.47, 'INR': 96.5 },
+      'CAD': { 'USD': 0.80, 'EUR': 0.68, 'INR': 61.0 },
+    };
+
+    $(document).ready(function() {
+      $('.currency-select').select2({
+        templateResult: formatOption,
+        templateSelection: formatOption,
+        minimumResultsForSearch: -1
+      });
+
+      function formatOption(state) {
+        if (!state.id) return state.text;
+        const img = $(state.element).data('image');
+        return $(`<span class="currency-option"><img src="${img}" alt="${state.text}"> ${state.text}</span>`);
+      }
+    });
+
+    function convertCurrency() {
+      const amount = parseFloat(document.getElementById('amount').value);
+      const fromCurrency = document.getElementById('fromCurrency').value;
+      const toCurrency = document.getElementById('toCurrency').value;
+
+      if (isNaN(amount) || amount <= 0) {
+        document.getElementById('result').textContent = 'Please enter a valid amount.';
+        return;
+      }
+
+      if (fromCurrency === toCurrency) {
+        document.getElementById('result').textContent = `${amount} ${fromCurrency} is equal to ${amount} ${toCurrency}`;
+        return;
+      }
+
+      const convertedAmount = amount * exchangeRates[fromCurrency][toCurrency];
+      document.getElementById('result').textContent = `${amount} ${fromCurrency} is equal to ${convertedAmount.toFixed(3)} ${toCurrency}`;
+    }
+  </script>
+</body>
+</html>
